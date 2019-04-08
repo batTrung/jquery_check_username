@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% load widget_tweaks %}
+
+{% block title %}
+	Register
+{% endblock title %}
+
+{% block content %}
+	<div class="signup-form">	
+    <form id='js-form' method="post" check-username="{% url "check_username" %}">
+		<h2>Create Account</h2>
+		<br>
+		<div class="errors">
+	  		<!-- Nơi hiện thị lỗi -->
+	    </div>
+			
+		{% csrf_token %}
+        <div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon"><i class="fa fa-user"></i></span>
+				{% render_field form.username class="form-control" placeholder="username" %}
+			</div>
+        </div>
+
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon"><i class="fa fa-lock"></i></span>
+				{% render_field form.password1 class="form-control" placeholder="*****" %}
+			</div>
+        </div>
+		<div class="form-group">
+			<div class="input-group">
+				<span class="input-group-addon">
+					<i class="fa fa-lock"></i>
+					<i class="fa fa-check"></i>
+				</span>
+				{% render_field form.password2 class="form-control" placeholder="*****" %}
+			</div>
+        </div>        
+		<div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block btn-lg">Đăng ký</button>
+        </div>
+        
+    </form>
+	
+</div>
+{% endblock content %}
+
+{% block scripts %}
+	<script>
+		$(function(){
+			$('#id_username').keyup(function(){
+				var form = $('#js-form'); 
+
+				$.ajax({
+					url: form.attr("check-username"),
+					type: 'get',
+					dataType: 'json',
+					data: form.serialize(),
+					success: function(data){
+						if (data.is_errors){
+							$('.errors').html('<div class="alert alert-danger" role="alert">username đã được dùng. Vui lòng chọn username khác</div>');
+						} else{
+							$('.errors').html('');
+						}
+					}
+				});
+			});
+		});
+
+	</script>
+{% endblock scripts %}

@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}
+	Register
+{% endblock title %}
+
+{% block content %}
+<div class="signup-form">	
+	<form id="js-form" method="post" check-username="{% url "check_username" %}"> 
+	  {% csrf_token %}
+
+	  <h2>Create Account</h2>
+	  <div class="errors">
+	  	<!-- Nơi hiện thị lỗi -->
+	  </div>
+	  
+	  {% for field in form  %}
+	  <div class="form-group">
+	    <label for="{{field.id_for_label}}">{{field.label}}</label>
+	    {{field}}
+	  </div>
+	  {% endfor %}
+
+	  <button type="submit" class="btn btn-primary btn-block btn-lg">Submit</button>
+	</form>
+</div>
+{% endblock content %}
+
+{% block scripts %}
+	<script>
+		$(function(){
+			$('#id_username').keyup(function(){
+				var form = $('#js-form'); 
+
+				$.ajax({
+					url: form.attr("check-username"),
+					type: 'get',
+					dataType: 'json',
+					data: form.serialize(),
+					success: function(data){
+						if (data.is_errors){
+							$('.errors').html('<div class="alert alert-danger" role="alert">username đã được dùng. Vui lòng chọn username khác</div>');
+						} else{
+							$('.errors').html('');
+						}
+					}
+				});
+			});
+		});
+
+	</script>
+{% endblock scripts %}
